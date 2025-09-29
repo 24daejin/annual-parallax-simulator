@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Annual Parallax Simulator</title>
+    <meta name="description" content="Interactive educational simulator for annual parallax effect">
+    <meta name="keywords" content="parallax, astronomy, education, simulator, stars">
+    <meta name="author" content="Educational Project">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://username.github.io/annual-parallax-simulator/">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1 class="app-title">
+                ⭐ 연주 시차 (Annual Parallax) 시뮬레이터
+            </h1>
+            <p class="app-subtitle">지구의 공전으로 인한 별들의 위치 변화를 관측해보세요</p>
+            <div class="educational-notice">
+                <p>ℹ️ <strong>교육 목적의 가상 시나리오</strong></p>
+                <p>실제로는 서로 다른 거리의 별이 같은 하늘 영역에 나타나는 경우는 드물지만, 연주시차 원리 이해를 위한 교육적 예시입니다.</p>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- 컨트롤 패널 -->
+            <section class="control-panel">
+                <div class="controls-group">
+                    <button id="playBtn" class="control-btn play-btn">
+                        ▶️ 재생
+                    </button>
+                    <button id="pauseBtn" class="control-btn pause-btn" disabled>
+                        ⏸️ 정지
+                    </button>
+                    <button id="resetBtn" class="control-btn reset-btn">
+                        🔄 리셋
+                    </button>
+                </div>
+                
+                <div class="speed-control">
+                    <label for="speedSlider">속도:</label>
+                    <input type="range" id="speedSlider" min="0.1" max="3" value="1" step="0.1">
+                    <span id="speedDisplay">1.0x</span>
+                </div>
+            </section>
+
+            <!-- 시뮬레이터 패널들 -->
+            <div class="simulator-container">
+                <!-- 태양계 뷰 -->
+                <section class="simulator-panel solar-panel">
+                    <div class="panel-header">
+                        <h2>☀️ 태양계 (북쪽에서 본 탑뷰)</h2>
+                        <p>지구가 반시계방향으로 공전합니다. 드래그하여 위치를 조절할 수 있습니다</p>
+                    </div>
+                    <div class="canvas-container">
+                        <canvas id="solarCanvas" width="500" height="500"></canvas>
+                        <div class="canvas-overlay">
+                            <div class="orbit-info">
+                                <span>지구 궤도</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 별 관측 뷰 -->
+                <section class="simulator-panel star-panel">
+                    <div class="panel-header">
+                        <h2>🔭 지구에서 본 별들의 위치</h2>
+                        <p>별들이 좌우로 일직선 이동하는 연주시차 효과를 관찰하세요 (교육적 단순화)</p>
+                    </div>
+                    <div class="canvas-container">
+                        <canvas id="starCanvas" width="500" height="500"></canvas>
+                        <div class="star-legend">
+                            <div class="legend-item">
+                                <div class="star-marker bright"></div>
+                                <span>근거리 별 (연주시차 有)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="star-marker dim"></div>
+                                <span>배경 별 (연주시차 無)</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- 정보 패널 -->
+            <section class="info-panel">
+                <div class="info-group">
+                    <h3>🕐 시간 정보</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">경과 시간:</span>
+                            <span id="timeDisplay" class="info-value">0.00년</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">지구 위치:</span>
+                            <span id="earthPos" class="info-value">0°</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">계절:</span>
+                            <span id="season" class="info-value">봄</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-group">
+                    <h3>📏 연주시차 측정</h3>
+                    <div class="parallax-info">
+                        <div class="star-data">
+                            <h4>별 A (가상의 근거리 별 α)</h4>
+                            <div class="info-item">
+                                <span class="info-label">거리:</span>
+                                <span class="info-value">2.5 파섹</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">연주시차:</span>
+                                <span id="starAParallax" class="info-value parallax-value">0.000"</span>
+                            </div>
+                        </div>
+                        
+                        <div class="star-data">
+                            <h4>별 B (가상의 원거리 별 β)</h4>
+                            <div class="info-item">
+                                <span class="info-label">거리:</span>
+                                <span class="info-value">5.0 파섹</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">연주시차:</span>
+                                <span id="starBParallax" class="info-value parallax-value">0.000"</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="parallax-explanation">
+                        <p><strong>연주시차란?</strong> 지구가 태양 주위를 공전하면서 관측되는 별의 겉보기 위치 변화입니다.</p>
+                        <p><strong>공식:</strong> 연주시차(각초) = 1 / 거리(파섹)</p>
+                        <p><strong>교육적 단순화:</strong> 별이 지구 공전궤도와 같은 면에 있다고 가정하여 좌우 일직선 이동으로 표현했습니다.</p>
+                        <p><strong>실제 현상:</strong> 실제로는 별이 작은 타원형으로 움직이지만, 연주시차 원리 이해를 위해 일직선으로 단순화했습니다.</p>
+                        <p><strong>관측의 한계:</strong> 현실에서는 연주시차가 극히 작아 정밀한 측정 장비가 필요합니다.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 사용법 안내 -->
+            <section class="help-panel">
+                <h3>❓ 사용법</h3>
+                <div class="help-grid">
+                    <div class="help-item">
+                        ▶️
+                        <p><strong>자동 시뮬레이션</strong><br>재생 버튼을 눌러 시간의 흐름에 따른 연주시차 효과를 관찰하세요</p>
+                    </div>
+                    <div class="help-item">
+                        ✋
+                        <p><strong>수동 조작</strong><br>태양계 뷰에서 지구를 클릭하고 드래그하여 원하는 위치로 이동하세요</p>
+                    </div>
+                    <div class="help-item">
+                        👁️
+                        <p><strong>연주시차 관찰</strong><br>별 관측 뷰에서 지구 위치 변화에 따른 별들의 위치 이동을 확인하세요</p>
+                    </div>
+                    <div class="help-item">
+                        📈
+                        <p><strong>속도 조절</strong><br>속도 슬라이더로 시뮬레이션 속도를 조절할 수 있습니다</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 실제 천체관측 정보 -->
+            <section class="reality-panel">
+                <h3>🔭 실제 천체관측에서는...</h3>
+                <div class="reality-grid">
+                    <div class="reality-item">
+                        ⚠️
+                        <h4>극소한 연주시차</h4>
+                        <p>가장 가까운 별의 연주시차도 1각초 미만으로 극히 작습니다. (1각초 = 1/3600도)</p>
+                    </div>
+                    <div class="reality-item">
+                        🔬
+                        <h4>정밀 측정 필요</h4>
+                        <p>연주시차 측정에는 허블 우주망원경, 가이아 위성 같은 정밀한 장비가 필요합니다.</p>
+                    </div>
+                    <div class="reality-item">
+                        🗺️
+                        <h4>별들의 분산 배치</h4>
+                        <p>실제로는 서로 다른 거리의 별이 같은 방향에 나타나는 경우가 매우 드뭅니다.</p>
+                    </div>
+                    <div class="reality-item">
+                        📈
+                        <h4>거리 측정 한계</h4>
+                        <p>연주시차법으로는 약 100파섹(326광년) 이내의 별만 정확히 측정 가능합니다.</p>
+                    </div>
+                </div>
+                <div class="reality-conclusion">
+                    <p><strong>결론:</strong> 이 시뮬레이터는 연주시차의 <em>원리</em>를 이해하기 위한 교육용 도구입니다. 실제 천체관측은 훨씬 더 복잡하고 정밀한 과정을 거칩니다.</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <p>&copy; 2024 연주시차 시뮬레이터 | 천문학 교육용 시뮬레이션</p>
+        </footer>
+    </div>
+
+    <script src="js/parallax-simulator.js"></script>
+</body>
+</html>
